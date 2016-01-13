@@ -43,17 +43,43 @@ class ViewController: UIViewController {
 
     @IBAction func didClickOnStart(sender: AnyObject) {
         
-        let img1 = Downloader.downloadImageWithURL(imageURLs[0])
-        self.imageView1.image = img1
+        // get a reference to the default concurrent queue using dispatch_get_global_queue
+        let queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+        dispatch_async(queue) { () -> Void in
+            
+            // inside the block we submit a task which is to download the first image.
+            let image1 = Downloader.downloadImageWithURL(imageURLs[0])
+            
+            // Once the image download completes, we submit another task to the main queue to update the image view with the downloaded image. 
+            // In other words, we put the image download task in a background thread, but execute the UI related tasks in the main queue.
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                self.imageView1.image = image1
+            })
+        }
         
-        let img2 = Downloader.downloadImageWithURL(imageURLs[1])
-        self.imageView2.image = img2
+        dispatch_async(queue) { () -> Void in
+            let image2 = Downloader.downloadImageWithURL(imageURLs[1])
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                self.imageView2.image = image2
+            })
+        }
         
-        let img3 = Downloader.downloadImageWithURL(imageURLs[2])
-        self.imageView3.image = img3
+        dispatch_async(queue) { () -> Void in
+            let image3 = Downloader.downloadImageWithURL(imageURLs[2])
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                self.imageView3.image = image3
+            })
+        }
         
-        let img4 = Downloader.downloadImageWithURL(imageURLs[3])
-        self.imageView4.image = img4
+        dispatch_async(queue) { () -> Void in
+            let image4 = Downloader.downloadImageWithURL(imageURLs[3])
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                self.imageView4.image = image4
+            })
+        }
+        
+        
+        
         
     }
     @IBAction func sliderValueChanged(sender: UISlider) {
