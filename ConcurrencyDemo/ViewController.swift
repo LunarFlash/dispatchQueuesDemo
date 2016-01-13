@@ -4,7 +4,7 @@
 //
 //  Created by Hossam Ghareeb on 11/15/15.
 //  Copyright © 2015 Hossam Ghareeb. All rights reserved.
-//
+//  http://www.appcoda.com/ios-concurrency/
 
 import UIKit
 
@@ -42,7 +42,8 @@ class ViewController: UIViewController {
     }
 
     @IBAction func didClickOnStart(sender: AnyObject) {
-        
+        /****** Concurrent Dispatch Queue *****/
+         /*
         // get a reference to the default concurrent queue using dispatch_get_global_queue
         let queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
         dispatch_async(queue) { () -> Void in
@@ -77,7 +78,71 @@ class ViewController: UIViewController {
                 self.imageView4.image = image4
             })
         }
+        */
         
+        /****** Serial Dispatch Queue ******/
+        /*
+        let serialQueue = dispatch_queue_create("com.vento.yi", DISPATCH_QUEUE_SERIAL)
+        dispatch_async(serialQueue) { () -> Void in
+            let image1 = Downloader.downloadImageWithURL(imageURLs[0])
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                self.imageView1.image = image1
+            })
+        }
+        
+        dispatch_async(serialQueue) { () -> Void in
+            let image2 = Downloader.downloadImageWithURL(imageURLs[1])
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                self.imageView2.image = image2
+            })
+        }
+        
+        dispatch_async(serialQueue) { () -> Void in
+            let image3 = Downloader.downloadImageWithURL(imageURLs[2])
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                self.imageView3.image = image3
+            })
+        }
+        dispatch_async(serialQueue) { () -> Void in
+            let image4 = Downloader.downloadImageWithURL(imageURLs[3])
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                self.imageView4.image = image4
+            })
+        }
+        */
+        
+        /****** NSOperation Queues ******/
+        let queue = NSOperationQueue()
+        
+        queue.addOperationWithBlock { () -> Void in
+            
+            let image1 = Downloader.downloadImageWithURL(imageURLs[0])
+            
+            NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
+                self.imageView1.image = image1
+            })
+        }
+        
+        queue.addOperationWithBlock { () -> Void in
+            let image2 = Downloader.downloadImageWithURL(imageURLs[1])
+            NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
+                self.imageView2.image = image2
+            })
+        }
+        
+        queue.addOperationWithBlock { () -> Void in
+            let image3 = Downloader.downloadImageWithURL(imageURLs[2])
+            NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
+                self.imageView3.image = image3
+            })
+        }
+        
+        queue.addOperationWithBlock { () -> Void in
+            let image4 = Downloader.downloadImageWithURL(imageURLs[3])
+            NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
+                self.imageView4.image = image4
+            })
+        }
         
         
         
